@@ -1,0 +1,80 @@
+
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta charset="UTF-8">
+<title>What week are we in, by the way?</title>
+<!--link id="favicon" rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAIAAACQkWg2AAAAHUlEQVQoz2M8w0AaYGKgtQbG////DzInjWoYKRoAC6wD6I8RK74AAAAASUVORK5CYII="/-->
+<link id="favicon"
+      rel="icon"
+      type="image/png"
+      href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAIAAACQkWg2AAAAQElEQVQoz2P4jwQWLVr0HwOgCbKcZWRkgINFi1C42AQZzzCQBlgOkqiB8dmzZyRpYCLRglENQ1UDy969e0nSAAAH9Dkwdj7YwgAAAABJRU5ErkJggg=="/>
+</head>
+
+<body>
+<div style="text-align: right;"><a href="https://pipeline-program.slack.com/archives/C027Z067FM2">Help and support</a></div>
+<h1 id="week" style="font-size: 25.5vw; text-align: center; margin-top: 0"></h1>
+<script>
+let $link = document.getElementById('favicon');
+const originalIcon = $link.href;
+
+const pad = () => {
+  const unixTime = new Date().getTime();
+  let $img = document.createElement('img');
+
+  $img.src = 'weeklee.gif?now=' + unixTime;
+
+  return $img;
+}
+
+const favicon = ($link, w) => {
+  let canvas = document.createElement('canvas');
+  canvas.width = 16;
+  canvas.height = 16;
+
+  let ctx = canvas.getContext('2d');
+
+  let img = new Image();
+  img.onload = () => {
+    ctx.drawImage(img, 0, 0);
+
+    ctx.fillStyle = '#000000';
+    ctx.font = 'bold 10px sans-serif';
+    ctx.textAlign = 'center'
+    ctx.fillText(w, 8, 13);
+
+    let url = canvas.toDataURL('image/png');
+    $link.setAttribute('src', url);
+    $link.setAttribute('href', url);
+  }
+
+  img.src = originalIcon;
+}
+
+const weeklee = $el => {
+  const dateFrom = new Date('2022-10-1');
+
+  const dateTo = new Date();
+  let w = Math.ceil((dateTo - dateFrom)/(1000*60*60*24*7));
+
+  if(w < 1 || w > 27) { w = '∞'; }
+
+  $w.innerHTML = w;
+
+  favicon($link, w);
+};
+
+const $w = document.getElementById('week');
+$w.insertAdjacentElement('afterend', pad());
+
+weeklee($w);
+
+// Increase the total entropy of the Universe,
+// periodically updating the number.
+setInterval(() => weeklee($w), 1000*60);
+</script>
+</body>
+
+</html>
+
