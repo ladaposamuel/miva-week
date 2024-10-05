@@ -1,80 +1,174 @@
-
 <!DOCTYPE html>
+<html lang="en">
 
-<html>
 <head>
-<meta charset="UTF-8">
-<title>What week are we in, by the way?</title>
-<!--link id="favicon" rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAIAAACQkWg2AAAAHUlEQVQoz2M8w0AaYGKgtQbG////DzInjWoYKRoAC6wD6I8RK74AAAAASUVORK5CYII="/-->
-<link id="favicon"
-      rel="icon"
-      type="image/png"
-      href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAIAAACQkWg2AAAAQElEQVQoz2P4jwQWLVr0HwOgCbKcZWRkgINFi1C42AQZzzCQBlgOkqiB8dmzZyRpYCLRglENQ1UDy969e0nSAAAH9Dkwdj7YwgAAAABJRU5ErkJggg=="/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>What week are we in?</title>
+  <link id="favicon" rel="icon" type="image/png"
+    href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAIAAACQkWg2AAAAQElEQVQoz2P4jwQWLVr0HwOgCbKcZWRkgINFi1C42AQZzzCQBlgOkqiB8dmzZyRpYCLRglENQ1UDy969e0nSAAAH9Dkwdj7YwgAAAABJRU5ErkJggg==" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #f0f8ff;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #2c3e50;
+    }
+
+    h1 {
+      font-size: 25vw;
+      text-align: center;
+      margin-top: 0;
+      color: #3498db;
+      transition: all 0.3s ease-in-out;
+    }
+
+    h1:hover {
+      color: #2980b9;
+      transform: scale(1.05);
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .subtext {
+      font-size: 1.5rem;
+      margin-top: 20px;
+      color: #95a5a6;
+    }
+
+    .links {
+      margin-top: 30px;
+      padding: 20px;
+      background-color: #eaf2f8;
+      border-radius: 8px;
+      width: 300px;
+      text-align: center;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .links h2 {
+      font-size: 1.5rem;
+      color: #3498db;
+      margin-bottom: 15px;
+    }
+
+    .links a {
+      display: block;
+      margin-bottom: 10px;
+      color: #2c3e50;
+      text-decoration: none;
+      font-size: 1.1rem;
+      transition: color 0.2s ease-in-out;
+    }
+
+    .links a:hover {
+      color: #2980b9;
+    }
+
+    @keyframes fadeIn {
+      0% {
+        opacity: 0;
+      }
+
+      100% {
+        opacity: 1;
+      }
+    }
+
+    #week {
+      animation: fadeIn 1s ease-in;
+    }
+  </style>
 </head>
 
 <body>
-<div style="text-align: right;"><a href="https://pipeline-program.slack.com/archives/C027Z067FM2">Help and support</a></div>
-<h1 id="week" style="font-size: 25.5vw; text-align: center; margin-top: 0"></h1>
-<script>
-let $link = document.getElementById('favicon');
-const originalIcon = $link.href;
+  <div class="container">
+    <h1 id="week"></h1>
+    <p class="subtext">Current Week of the Semester</p>
 
-const pad = () => {
-  const unixTime = new Date().getTime();
-  let $img = document.createElement('img');
 
-  $img.src = 'weeklee.gif?now=' + unixTime;
+    <div class="links">
+      <h2>Helpful Links</h2>
+      <ol>
+        <li><a href="https://class.miva.university" target="_blank">LMS - Miva University</a></li>
+      </ol>
+    </div>
+  </div>
 
-  return $img;
-}
+  <script>
+    let $link = document.getElementById('favicon');
+    const originalIcon = $link.href;
 
-const favicon = ($link, w) => {
-  let canvas = document.createElement('canvas');
-  canvas.width = 16;
-  canvas.height = 16;
+    const pad = () => {
+      const unixTime = new Date().getTime();
+      let $img = document.createElement('img');
 
-  let ctx = canvas.getContext('2d');
+      $img.src = 'weeklee.gif?now=' + unixTime;
 
-  let img = new Image();
-  img.onload = () => {
-    ctx.drawImage(img, 0, 0);
+      return $img;
+    }
 
-    ctx.fillStyle = '#000000';
-    ctx.font = 'bold 10px sans-serif';
-    ctx.textAlign = 'center'
-    ctx.fillText(w, 8, 13);
+    const favicon = ($link, w) => {
+      let canvas = document.createElement('canvas');
+      canvas.width = 16;
+      canvas.height = 16;
 
-    let url = canvas.toDataURL('image/png');
-    $link.setAttribute('src', url);
-    $link.setAttribute('href', url);
-  }
+      let ctx = canvas.getContext('2d');
 
-  img.src = originalIcon;
-}
+      let img = new Image();
+      img.onload = () => {
+        ctx.drawImage(img, 0, 0);
 
-const weeklee = $el => {
-  const dateFrom = new Date('2022-10-1');
+        ctx.fillStyle = '#000000';
+        ctx.font = 'bold 10px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(w, 8, 13);
 
-  const dateTo = new Date();
-  let w = Math.ceil((dateTo - dateFrom)/(1000*60*60*24*7));
+        let url = canvas.toDataURL('image/png');
+        $link.setAttribute('src', url);
+        $link.setAttribute('href', url);
+      }
 
-  if(w < 1 || w > 27) { w = '∞'; }
+      img.src = originalIcon;
+    }
 
-  $w.innerHTML = w;
+    const weeklee = $el => {
+      const semesterStartDate = new Date('2024-09-02'); // Semester start date
+      const currentDate = new Date(); // Today's date
 
-  favicon($link, w);
-};
+      // Calculate the week number
+      let w = Math.ceil((currentDate - semesterStartDate) / (1000 * 60 * 60 * 24 * 7));
 
-const $w = document.getElementById('week');
-$w.insertAdjacentElement('afterend', pad());
+      // If week number is less than 1 (before semester start), show '∞' or cap it within the valid range
+      if (w < 1 || w > 14) { w = '∞'; }
 
-weeklee($w);
+      $w.innerHTML = w;
 
-// Increase the total entropy of the Universe,
-// periodically updating the number.
-setInterval(() => weeklee($w), 1000*60);
-</script>
+      favicon($link, w);
+    };
+
+    const $w = document.getElementById('week');
+    $w.insertAdjacentElement('afterend', pad());
+
+    weeklee($w);
+
+    // Periodically update the week number every 60 seconds
+    setInterval(() => weeklee($w), 1000 * 60);
+  </script>
 </body>
 
 </html>
-
