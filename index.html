@@ -155,26 +155,20 @@
       img.src = originalIcon;
     }
 
+    //might not work
     const generateWeekImage = (weekNumber) => {
       const canvas = document.createElement('canvas');
       canvas.width = 1200;
       canvas.height = 630;
       const ctx = canvas.getContext('2d');
-
-      // Set background
       ctx.fillStyle = '#f0f8ff';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-      // Set text style
       ctx.fillStyle = '#3498db';
       ctx.font = 'bold 200px Arial';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
 
-      // Draw week number
       ctx.fillText(`Week ${weekNumber}`, canvas.width / 2, canvas.height / 2);
-
-      // Draw additional text
       ctx.font = 'bold 60px Arial';
       ctx.fillText('of the Semester', canvas.width / 2, canvas.height / 2 + 150);
 
@@ -214,7 +208,6 @@
 
     weeklee($w);
 
-    // Periodically update the week number every 60 seconds
     setInterval(() => weeklee($w), 1000 * 60);
   </script>
 </body>
