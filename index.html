@@ -5,12 +5,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>What week are we in?</title>
-  <meta name="description" content="Current week of the semester">
+  <meta name="description" content="Semester started on September 2, 2024. Check current week.">
   <meta property="og:title" content="What week are we in?">
-  <meta property="og:description" content="Current week of the semester">
-  <meta property="og:image" content="https://miva.vercel.com/week-preview.png">
-  <meta property="og:url" content="https://miva.vercel.com">
+  <meta property="og:description" content="Semester started on September 2, 2024. Check current week.">
+  <meta property="og:image" content="https://miva.vercel.app/week-preview.png">
+  <meta property="og:url" content="https://miva.vercel.app">
   <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="What week are we in?">
+  <meta name="twitter:description" content="Semester started on September 2, 2024. Check current week.">
+  <meta name="twitter:image" content="https://miva.vercel.app/week-preview.png">
 
   <link id="favicon" rel="icon" type="image/png"
     href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAIAAACQkWg2AAAAQElEQVQoz2P4jwQWLVr0HwOgCbKcZWRkgINFi1C42AQZzzCQBlgOkqiB8dmzZyRpYCLRglENQ1UDy969e0nSAAAH9Dkwdj7YwgAAAABJRU5ErkJggg==" />
@@ -180,28 +183,22 @@
 
     const updateMetaTags = (weekNumber) => {
       const title = `Week ${weekNumber} of the Semester`;
-      const description = `We are currently in week ${weekNumber} of the semester.`;
+      const description = `Semester started on September 2, 2024 and we are in week ${weekNumber}`;
 
+      document.title = title;
       document.querySelector('meta[name="description"]').setAttribute("content", description);
       document.querySelector('meta[property="og:title"]').setAttribute("content", title);
       document.querySelector('meta[property="og:description"]').setAttribute("content", description);
-
-      // Generate and set the dynamic image
-      const imageUrl = generateWeekImage(weekNumber);
-      document.querySelector('meta[property="og:image"]').setAttribute("content", imageUrl);
-
-      // Update Twitter card
-      document.querySelector('meta[name="twitter:card"]').setAttribute("content", "summary_large_image");
+      document.querySelector('meta[name="twitter:title"]').setAttribute("content", title);
+      document.querySelector('meta[name="twitter:description"]').setAttribute("content", description);
     };
 
     const weeklee = $el => {
-      const semesterStartDate = new Date('2024-09-02'); // Semester start date
-      const currentDate = new Date(); // Today's date
+      const semesterStartDate = new Date('2024-09-02');
+      const currentDate = new Date();
 
-      // Calculate the week number
       let w = Math.ceil((currentDate - semesterStartDate) / (1000 * 60 * 60 * 24 * 7));
 
-      // If week number is less than 1 (before semester start), show '∞' or cap it within the valid range
       if (w < 1 || w > 14) {
         w = '∞';
       }
@@ -209,7 +206,6 @@
       $w.innerHTML = w;
       favicon($link, w);
 
-      // Update meta tags for URL preview
       updateMetaTags(w);
     };
 
