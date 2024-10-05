@@ -5,6 +5,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>What week are we in?</title>
+  <meta name="description" content="Current week of the semester">
+  <meta property="og:title" content="What week are we in?">
+  <meta property="og:description" content="Current week of the semester">
+  <meta property="og:image" content="https://miva.vercel.com/week-preview.png">
+  <meta property="og:url" content="https://miva.vercel.com">
+  <meta name="twitter:card" content="summary_large_image">
+
   <link id="favicon" rel="icon" type="image/png"
     href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAIAAACQkWg2AAAAQElEQVQoz2P4jwQWLVr0HwOgCbKcZWRkgINFi1C42AQZzzCQBlgOkqiB8dmzZyRpYCLRglENQ1UDy969e0nSAAAH9Dkwdj7YwgAAAABJRU5ErkJggg==" />
   <style>
@@ -100,7 +107,6 @@
     <h1 id="week"></h1>
     <p class="subtext">Current Week of the Semester</p>
 
-
     <div class="links">
       <h2>Helpful Links</h2>
       <ol>
@@ -146,6 +152,48 @@
       img.src = originalIcon;
     }
 
+    const generateWeekImage = (weekNumber) => {
+      const canvas = document.createElement('canvas');
+      canvas.width = 1200;
+      canvas.height = 630;
+      const ctx = canvas.getContext('2d');
+
+      // Set background
+      ctx.fillStyle = '#f0f8ff';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Set text style
+      ctx.fillStyle = '#3498db';
+      ctx.font = 'bold 200px Arial';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+
+      // Draw week number
+      ctx.fillText(`Week ${weekNumber}`, canvas.width / 2, canvas.height / 2);
+
+      // Draw additional text
+      ctx.font = 'bold 60px Arial';
+      ctx.fillText('of the Semester', canvas.width / 2, canvas.height / 2 + 150);
+
+      return canvas.toDataURL('image/png');
+    }
+
+    const updateMetaTags = (weekNumber) => {
+      const title = `Week ${weekNumber} of the Semester`;
+      const description = `We are currently in week ${weekNumber} of the semester.`;
+
+      document.querySelector('meta[name="description"]').setAttribute("content", description);
+      document.querySelector('meta[property="og:title"]').setAttribute("content", title);
+      document.querySelector('meta[property="og:description"]').setAttribute("content", description);
+
+      // Generate and set the dynamic image
+      const imageUrl = generateWeekImage(weekNumber);
+      document.querySelector('meta[property="og:image"]').setAttribute("content", imageUrl);
+
+      // Update Twitter card
+      document.querySelector('meta[name="twitter:card"]').setAttribute("content", "summary_large_image");
+    };
+
     const weeklee = $el => {
       const semesterStartDate = new Date('2024-09-02'); // Semester start date
       const currentDate = new Date(); // Today's date
@@ -154,11 +202,15 @@
       let w = Math.ceil((currentDate - semesterStartDate) / (1000 * 60 * 60 * 24 * 7));
 
       // If week number is less than 1 (before semester start), show '∞' or cap it within the valid range
-      if (w < 1 || w > 14) { w = '∞'; }
+      if (w < 1 || w > 14) {
+        w = '∞';
+      }
 
       $w.innerHTML = w;
-
       favicon($link, w);
+
+      // Update meta tags for URL preview
+      updateMetaTags(w);
     };
 
     const $w = document.getElementById('week');
