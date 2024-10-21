@@ -17,7 +17,6 @@
 
   <link id="favicon" rel="icon" type="image/png"
     href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAIAAACQkWg2AAAAQElEQVQoz2P4jwQWLVr0HwOgCbKcZWRkgINFi1C42AQZzzCQBlgOkqiB8dmzZyRpYCLRglENQ1UDy969e0nSAAAH9Dkwdj7YwgAAAABJRU5ErkJggg==" />
-
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -30,7 +29,7 @@
       margin: 0;
     }
 
-    .container {
+    #container {
       background-color: rgba(255, 255, 255, 0.1);
       border: 2px solid #E83831;
       border-radius: 10px;
@@ -55,7 +54,7 @@
 </head>
 
 <body>
-  <div class="container">
+  <div id="container">
     <b>Current week:</b>
     <div class="current-week" id="currentWeek"></div>
     <div class="countdown" id="countdown"></div>
@@ -64,103 +63,115 @@
     <p></p>
     <div class="current-datetime" id="currentDateTime"></div>
   </div>
-
-  <script src="https://code.jquery.com/jquery-3.7.1.min.js"
-    integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
   <script>
-    const $link = $('#favicon');
-    const originalIcon = $link.attr('href');
+    // Goal: Restructure code to only use javascript and also avoid side effects (https://en.wikipedia.org/wiki/Side_effect_(computer_science)) by using encapsulation;
 
-    const pad = () => {
-      const unixTime = new Date().getTime();
-      return $('<img>').attr('src', 'weeklee.gif?now=' + unixTime);
-    };
+    const semesterStart = new Date( '2024-09-02' );
+    const examDate = new Date( '2024-12-02' );
+    // Your function second arg is "w", that's not descriptive enough.
+    const favicon = ( link, week ) => {
+      // 1. Define favicon
+      // Point to note: This 👇 was only used within this enclosing function (favicon), there is no need to define it outside of it.
+      const faviconURL = document.getElementById( 'favicon' ).href;
 
-    const favicon = ($link, w) => {
-      let canvas = $('<canvas>')[0];
+      const canvas = document.createElement( 'canvas' );
       canvas.width = 16;
       canvas.height = 16;
 
-      let ctx = canvas.getContext('2d');
+      const ctx = canvas.getContext( '2d' );
+      const img = new Image();
 
-      let img = new Image();
       img.onload = () => {
-        ctx.drawImage(img, 0, 0);
+        ctx.drawImage( img, 0, 0 );
 
-        ctx.fillStyle = '#000000';
+        ctx.fillStyle = 'black';
         ctx.font = 'bold 10px sans-serif';
         ctx.textAlign = 'center';
-        ctx.fillText(w, 8, 13);
+        ctx.fillText( week, 8, 13 );
 
-        let url = canvas.toDataURL('image/png');
-        $link.attr({
-          'src': url,
-          'href': url
-        });
+        let url = canvas.toDataURL( 'image/png' );
+        link.setAttribute( 'src', url );
+        link.setAttribute( 'href', url );
       };
 
-      img.src = originalIcon;
+      img.src = faviconURL;
     };
 
-    function updateFavicon(weekNumber) {
-      let w = weekNumber;
-      if (w < 1 || w > 14) {
-        w = '∞';
-      }
-      favicon($link, w);
+    function updateFavicon( weekNumber ) {
+      const link = document.getElementById( 'favicon' );
+      let week = weekNumber;
+      if ( week < 1 || week > 14 ) week = '∞';
+
+      favicon( link, week );
     }
 
-    function updateMetaTags(weekNumber) {
+    function updateMetaTags( weekNumber ) {
       const now = new Date();
       const timeToExam = examDate - now;
-      const daysToExam = Math.floor(timeToExam / (24 * 60 * 60 * 1000));
+      const daysToExam = Math.floor( timeToExam / ( 24 * 60 * 60 * 1000 ) );
 
-      const description = `Currently in Week ${weekNumber}. ${daysToExam} days until the exam on ${examDate.toDateString()}.`;
-      const title = `Week ${weekNumber} - What week are we in?`;
+      const description = `Currently in Week ${weekNumber}. ${daysToExam} days until the exam on ${ examDate.toDateString() }.`;
+      const title = `Week ${ weekNumber } - What week are we in?`;
 
+      // Update description
+      document.querySelector( 'meta[name="description"]' ).textContent = description;
+      document.querySelector( 'meta[property="og:description"]' ).textContent = description;
 
-      $('meta[name="description"], meta[property="og:description"], meta[name="twitter:description"]').attr('content', description);
-      $('meta[property="og:title"], meta[name="twitter:title"]').attr('content', title);
-      $('title').text(title);
-      $(document).attr('title', title);
+      // Point to note: You don't need to set twitter:description since it is the same as description and og-description
+      // document.querySelector( 'meta[name="twitter:description"]' ).textContent = description;
 
+      // Update
+      document.querySelector( 'title' ).textContent = title;
+      document.querySelector( 'meta[property="og:title"]' ).textContent = title;
 
-      $('meta[name="keywords"]').attr('content', `week ${weekNumber}, semester, exam countdown`);
+      // Point to note: You don't need to set twitter:title since it is the same as description and og-description
+      // document.querySelector( 'meta[name="twitter:title"]' ).textContent = title;
+
+      // More point to note: Google does not care about seo keywords anymore
     }
 
-    // Set the start date of the semester and the exam date
-    const semesterStart = new Date('2024-09-02');
-    const examDate = new Date('2024-12-02');
-
     function updateDisplay() {
+      // Set the start date of the semester and the exam date
+      // The above has been moved inside updateDisplay as it can cause a side effect outside of it. Also, it was only used within updateDisplay
+
       const now = new Date();
 
       // Calculate current week of the semester
-      const weeksPassed = Math.floor((now - semesterStart) / (7 * 24 * 60 * 60 * 1000)) + 1;
-      $('#currentWeek').text(`Week ${weeksPassed}`);
+      const weeksPassed = Math.floor( ( now - semesterStart) / ( 7 * 24 * 60 * 60 * 1000 ) ) + 1;
+      document.getElementById( 'currentWeek' ).textContent = `Week ${ weeksPassed }`;
 
       // Calculate countdown to exam
       const timeToExam = examDate - now;
-      const daysToExam = Math.floor(timeToExam / (24 * 60 * 60 * 1000));
-      const hoursToExam = Math.floor((timeToExam % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
-      $('#countdown').text(`${daysToExam} days ${hoursToExam} hours to exam`);
+      const daysToExam = Math.floor( timeToExam / ( 24 * 60 * 60 * 1000 ) );
+      const hoursToExam = Math.floor( ( timeToExam % ( 24 * 60 * 60 * 1000 ) ) / ( 60 * 60 * 1000 ) );
+
+      document.getElementById( 'countdown' ).textContent = `${ daysToExam } days ${ hoursToExam } hours to exam`;
 
       // Update current date and time
       const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' };
-      $('#currentDateTime').text(now.toLocaleDateString('en-US', options));
 
-      let w = Math.ceil((now - semesterStart) / (1000 * 60 * 60 * 24 * 7));
-      updateFavicon(w);
+      document.getElementById( 'currentDateTime' ).textContent = now.toLocaleDateString( 'en-US', options );
 
-      updateMetaTags(w);
+      const week = Math.ceil( ( now - semesterStart) / ( 1000 * 60 * 60 * 24 * 7 ) );
+
+      updateFavicon( week );
+      updateMetaTags( week );
     }
 
-    // Update the display immediately and then every second
-    const $w = $('#currentWeek');
-    $w.after(pad());
+    // I don't know what this is for, but here is a rewrite in plain js
+    const pad = () => {
+      const unixTime = new Date().getTime();
+      const newImage = new Image();
+      newImage.src = `weeklee.gif?now=' + ${ unixTime }`;
 
-    updateDisplay();
-    setInterval(updateDisplay, 1000);
+      return newImage;
+    };
+
+    // Initialization should only happen/start when all the DOM content is loaded
+    document.addEventListener('DOMContentLoaded', function() {
+      // Well...
+      setInterval( updateDisplay, 1000 );
+    });
   </script>
 </body>
 
