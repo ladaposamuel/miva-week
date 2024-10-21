@@ -8,131 +8,76 @@
   <meta name="description" content="Semester started on September 2, 2024. Check current week.">
   <meta property="og:title" content="What week are we in?">
   <meta property="og:description" content="Semester started on September 2, 2024. Check current week.">
-  <meta property="og:image" content="https://miva.vercel.app/week-preview.jpeg">
+  <meta property="og:image" content="https://miva.vercel.app/week-preview.jpg">
   <meta property="og:url" content="https://miva.vercel.app">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="What week are we in?">
   <meta name="twitter:description" content="Semester started on September 2, 2024. Check current week.">
-  <meta name="twitter:image" content="https://miva.vercel.app/week-preview.jpeg">
+  <meta name="twitter:image" content="https://miva.vercel.app/week-preview.jpg">
 
   <link id="favicon" rel="icon" type="image/png"
     href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAIAAACQkWg2AAAAQElEQVQoz2P4jwQWLVr0HwOgCbKcZWRkgINFi1C42AQZzzCQBlgOkqiB8dmzZyRpYCLRglENQ1UDy969e0nSAAAH9Dkwdj7YwgAAAABJRU5ErkJggg==" />
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
 
+  <style>
     body {
+      font-family: Arial, sans-serif;
+      background-color: #0A3150;
+      color: #ffffff;
       display: flex;
-      flex-direction: column;
       justify-content: center;
       align-items: center;
       height: 100vh;
-      background-color: #f0f8ff;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      color: #2c3e50;
-    }
-
-    h1 {
-      font-size: 25vw;
-      text-align: center;
-      margin-top: 0;
-      color: #3498db;
-      transition: all 0.3s ease-in-out;
-    }
-
-    h1:hover {
-      color: #2980b9;
-      transform: scale(1.05);
+      margin: 0;
     }
 
     .container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    .subtext {
-      font-size: 1.5rem;
-      margin-top: 20px;
-      color: #95a5a6;
-    }
-
-    .links {
-      margin-top: 30px;
-      padding: 20px;
-      background-color: #eaf2f8;
-      border-radius: 8px;
-      width: 300px;
+      background-color: rgba(255, 255, 255, 0.1);
+      border: 2px solid #E83831;
+      border-radius: 10px;
+      padding: 30px;
       text-align: center;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     }
 
-    .links h2 {
-      font-size: 1.5rem;
-      color: #3498db;
+    .current-week {
+      font-size: 4.5em;
+      font-weight: bold;
+      margin-bottom: 20px;
+      color: #E83831;
+    }
+
+    .countdown,
+    .current-datetime {
+      font-size: 1.2em;
       margin-bottom: 15px;
-    }
-
-    .links a {
-      display: block;
-      margin-bottom: 10px;
-      color: #2c3e50;
-      text-decoration: none;
-      font-size: 1.1rem;
-      transition: color 0.2s ease-in-out;
-    }
-
-    .links a:hover {
-      color: #2980b9;
-    }
-
-    @keyframes fadeIn {
-      0% {
-        opacity: 0;
-      }
-
-      100% {
-        opacity: 1;
-      }
-    }
-
-    #week {
-      animation: fadeIn 1s ease-in;
+      color: #ffffff;
     }
   </style>
 </head>
 
 <body>
   <div class="container">
-    <h1 id="week"></h1>
-    <p class="subtext">Current Week of the Semester</p>
-
-    <div class="links">
-      <h2>Helpful Links</h2>
-      <ol>
-        <li><a href="https://class.miva.university" target="_blank">LMS - Miva University</a></li>
-      </ol>
-    </div>
+    <b>Current week:</b>
+    <div class="current-week" id="currentWeek"></div>
+    <div class="countdown" id="countdown"></div>
+    <hr />
+    <b>Today is:</b>
+    <p></p>
+    <div class="current-datetime" id="currentDateTime"></div>
   </div>
 
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+    integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
   <script>
-    let $link = document.getElementById('favicon');
-    const originalIcon = $link.href;
+    const $link = $('#favicon');
+    const originalIcon = $link.attr('href');
 
     const pad = () => {
       const unixTime = new Date().getTime();
-      let $img = document.createElement('img');
-
-      $img.src = 'weeklee.gif?now=' + unixTime;
-
-      return $img;
-    }
+      return $('<img>').attr('src', 'weeklee.gif?now=' + unixTime);
+    };
 
     const favicon = ($link, w) => {
-      let canvas = document.createElement('canvas');
+      let canvas = $('<canvas>')[0];
       canvas.width = 16;
       canvas.height = 16;
 
@@ -148,67 +93,74 @@
         ctx.fillText(w, 8, 13);
 
         let url = canvas.toDataURL('image/png');
-        $link.setAttribute('src', url);
-        $link.setAttribute('href', url);
-      }
+        $link.attr({
+          'src': url,
+          'href': url
+        });
+      };
 
       img.src = originalIcon;
-    }
-
-    //might not work
-    const generateWeekImage = (weekNumber) => {
-      const canvas = document.createElement('canvas');
-      canvas.width = 1200;
-      canvas.height = 630;
-      const ctx = canvas.getContext('2d');
-      ctx.fillStyle = '#f0f8ff';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = '#3498db';
-      ctx.font = 'bold 200px Arial';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-
-      ctx.fillText(`Week ${weekNumber}`, canvas.width / 2, canvas.height / 2);
-      ctx.font = 'bold 60px Arial';
-      ctx.fillText('of the Semester', canvas.width / 2, canvas.height / 2 + 150);
-
-      return canvas.toDataURL('image/png');
-    }
-
-    const updateMetaTags = (weekNumber) => {
-      const title = `Week ${weekNumber} of the Semester`;
-      const description = `Semester started on September 2, 2024 and we are in week ${weekNumber}`;
-
-      document.title = title;
-      document.querySelector('meta[name="description"]').setAttribute("content", description);
-      document.querySelector('meta[property="og:title"]').setAttribute("content", title);
-      document.querySelector('meta[property="og:description"]').setAttribute("content", description);
-      document.querySelector('meta[name="twitter:title"]').setAttribute("content", title);
-      document.querySelector('meta[name="twitter:description"]').setAttribute("content", description);
     };
 
-    const weeklee = $el => {
-      const semesterStartDate = new Date('2024-09-02');
-      const currentDate = new Date();
-
-      let w = Math.ceil((currentDate - semesterStartDate) / (1000 * 60 * 60 * 24 * 7));
-
+    function updateFavicon(weekNumber) {
+      let w = weekNumber;
       if (w < 1 || w > 14) {
         w = '∞';
       }
-
-      $w.innerHTML = w;
       favicon($link, w);
+    }
+
+    function updateMetaTags(weekNumber) {
+      const now = new Date();
+      const timeToExam = examDate - now;
+      const daysToExam = Math.floor(timeToExam / (24 * 60 * 60 * 1000));
+
+      const description = `Currently in Week ${weekNumber}. ${daysToExam} days until the exam on ${examDate.toDateString()}.`;
+      const title = `Week ${weekNumber} - What week are we in?`;
+
+
+      $('meta[name="description"], meta[property="og:description"], meta[name="twitter:description"]').attr('content', description);
+      $('meta[property="og:title"], meta[name="twitter:title"]').attr('content', title);
+      $('title').text(title);
+      $(document).attr('title', title);
+
+
+      $('meta[name="keywords"]').attr('content', `week ${weekNumber}, semester, exam countdown`);
+    }
+
+    // Set the start date of the semester and the exam date
+    const semesterStart = new Date('2024-09-02');
+    const examDate = new Date('2024-12-02');
+
+    function updateDisplay() {
+      const now = new Date();
+
+      // Calculate current week of the semester
+      const weeksPassed = Math.floor((now - semesterStart) / (7 * 24 * 60 * 60 * 1000)) + 1;
+      $('#currentWeek').text(`Week ${weeksPassed}`);
+
+      // Calculate countdown to exam
+      const timeToExam = examDate - now;
+      const daysToExam = Math.floor(timeToExam / (24 * 60 * 60 * 1000));
+      const hoursToExam = Math.floor((timeToExam % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
+      $('#countdown').text(`${daysToExam} days ${hoursToExam} hours to exam`);
+
+      // Update current date and time
+      const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' };
+      $('#currentDateTime').text(now.toLocaleDateString('en-US', options));
+
+      let w = Math.ceil((now - semesterStart) / (1000 * 60 * 60 * 24 * 7));
+      updateFavicon(w);
 
       updateMetaTags(w);
-    };
+    }
 
-    const $w = document.getElementById('week');
-    $w.insertAdjacentElement('afterend', pad());
+    // Update the display immediately and then every second
+    const $w = $('#currentWeek');
+    $w.after(pad());
 
-    weeklee($w);
-
-    setInterval(() => weeklee($w), 1000 * 60);
+    updateDisplay();
+    setInterval(updateDisplay, 1000);
   </script>
 </body>
 
